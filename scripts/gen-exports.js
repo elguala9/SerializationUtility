@@ -31,17 +31,17 @@ const pkg         = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
   }, {});
 
   // Wildcard mapping for any subpath under src
-  const wildcard = {
+  /*const wildcard = {
     './*': {
       import: './dist/src/*.js',
       require: './dist/src/*.js',
       types:  './dist/src/*.d.ts'
     }
-  };
+  };*/
 
   // Replace exports with wildcard + explicit entries
   pkg.exports = {
-    ...wildcard,
+    //...wildcard,
     ...exportsMap
   };
 

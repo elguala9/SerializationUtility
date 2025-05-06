@@ -35,11 +35,6 @@
     "typescript": "^5.8.2"
   },
   "exports": {
-    "./*": {
-      "import": "./dist/src/*.js",
-      "require": "./dist/src/*.js",
-      "types": "./dist/src/*.d.ts"
-    },
     "./src/Serialization": {
       "import": "./dist/src/Serialization.js",
       "require": "./dist/src/Serialization.js",
