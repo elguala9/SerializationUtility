@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import fs   from 'fs';
+import fs from 'fs';
 import path from 'path';
-import fg   from 'fast-glob';
+import fg from 'fast-glob';
 
 const projectRoot = process.cwd();
 const distDir     = path.join(projectRoot, 'dist');
@@ -9,38 +9,29 @@ const pkgPath     = path.join(projectRoot, 'package.json');
 const pkg         = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
 fg('**/*.js', { cwd: distDir }).then(jsFiles => {
-  // Build per-file exports, stripping "src/" if present
+  // Build per-file exports, stripping "src/" from keys
   const exportsMap = jsFiles.reduce((out, jsFile) => {
-    // remove extension and strip leading "src/"
-    const base = jsFile
-      .replace(/\.js$/, '')        // "src/Serialization" or "Utility"
-      .replace(/^src\//, '');      // now "Serialization" or "Utility"
+    const cleanName = jsFile
+      .replace(/\.js$/, '')       // remove extension
+      .replace(/^src\//, '');     // strip src/ prefix
 
-    const jsPath  = `./dist/${jsFile}`;         // "./dist/src/Serialization.js"
-    const dtsPath = `./dist/${jsFile.replace(/\.js$/, '.d.ts')}`;
+    const jsPath  = `./dist/${jsFile}`;
+    const dtsFile = jsFile.replace(/\.js$/, '.d.ts');
+    const dtsPath = `./dist/${dtsFile}`;
 
-    out[`./${base}`] = fs.existsSync(path.join(distDir, `${base}.d.ts`))
+    out[`./${cleanName}`] = fs.existsSync(path.join(distDir, dtsFile))
       ? { import: jsPath, types: dtsPath }
       : { import: jsPath };
 
     return out;
   }, {});
 
-  // Merge in wildcard export and main entry
+  // Define exports: no root index, wildcard covers dist/src
   pkg.exports = {
-    // entry-point
-    '.': {
-      import: './dist/index.js',
-      types:  './dist/index.d.ts'
-    },
-
-    // wildcard: any subpath
     './*': {
-      import: './dist/*.js',
-      types:  './dist/*.d.ts'
+      import: './dist/src/*.js',
+      types:  './dist/src/*.d.ts'
     },
-
-    // then all your explicit entries
     ...exportsMap
   };
 
