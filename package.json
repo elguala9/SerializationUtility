@@ -42,6 +42,12 @@
     "./src/Utility": {
       "import": "./dist/src/Utility.js",
       "types": "./dist/src/Utility.d.ts"
+    },
+    "./Serialization": {
+      "import": "./dist/Serialization.js"
+    },
+    "./Utility": {
+      "import": "./dist/Utility.js"
     }
   }
 }
