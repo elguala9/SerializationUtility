@@ -1,27 +1,49 @@
 #!/usr/bin/env node
-import fs       from 'fs';
-import path     from 'path';
-import fg       from 'fast-glob';
+import fs   from 'fs';
+import path from 'path';
+import fg   from 'fast-glob';
 
 const projectRoot = process.cwd();
 const distDir     = path.join(projectRoot, 'dist');
 const pkgPath     = path.join(projectRoot, 'package.json');
 const pkg         = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
-// prendi tutti i .js e verifica se esiste il corrispondente .d.ts
 fg('**/*.js', { cwd: distDir }).then(jsFiles => {
-  const exportsMap = jsFiles.reduce((o, jsFile) => {
-    const base = jsFile.replace(/\.js$/, '');              // es: "foo/bar"
-    const jsPath = `./dist/${jsFile}`;                     // "./dist/foo/bar.js"
-    const dtsPath = `./dist/${base}.d.ts`;                 // "./dist/foo/bar.d.ts"
-    // crea l’entry export con import + types
-    o[`./${base}`] = fs.existsSync(path.join(distDir, `${base}.d.ts`))
+  // Build per-file exports, stripping "src/" if present
+  const exportsMap = jsFiles.reduce((out, jsFile) => {
+    // remove extension and strip leading "src/"
+    const base = jsFile
+      .replace(/\.js$/, '')        // "src/Serialization" or "Utility"
+      .replace(/^src\//, '');      // now "Serialization" or "Utility"
+
+    const jsPath  = `./dist/${jsFile}`;         // "./dist/src/Serialization.js"
+    const dtsPath = `./dist/${jsFile.replace(/\.js$/, '.d.ts')}`;
+
+    out[`./${base}`] = fs.existsSync(path.join(distDir, `${base}.d.ts`))
       ? { import: jsPath, types: dtsPath }
       : { import: jsPath };
-    return o;
+
+    return out;
   }, {});
 
-  pkg.exports = { ...(pkg.exports||{}), ...exportsMap };
+  // Merge in wildcard export and main entry
+  pkg.exports = {
+    // entry-point
+    '.': {
+      import: './dist/index.js',
+      types:  './dist/index.d.ts'
+    },
+
+    // wildcard: any subpath
+    './*': {
+      import: './dist/*.js',
+      types:  './dist/*.d.ts'
+    },
+
+    // then all your explicit entries
+    ...exportsMap
+  };
+
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-  console.log('✅ exports aggiornati con', Object.keys(exportsMap));
+  console.log('✅ package.json exports updated:', Object.keys(pkg.exports));
 });

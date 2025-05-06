@@ -35,19 +35,19 @@
     "typescript": "^5.8.2"
   },
   "exports": {
-    "./src/Serialization": {
-      "import": "./dist/src/Serialization.js",
-      "types": "./dist/src/Serialization.d.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
-    "./src/Utility": {
-      "import": "./dist/src/Utility.js",
-      "types": "./dist/src/Utility.d.ts"
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
     },
     "./Serialization": {
-      "import": "./dist/Serialization.js"
+      "import": "./dist/src/Serialization.js"
     },
     "./Utility": {
-      "import": "./dist/Utility.js"
+      "import": "./dist/src/Utility.js"
     }
   }
 }
