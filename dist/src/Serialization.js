@@ -30,22 +30,34 @@ function fixObject(obj) {
  * Normalizza un oggetto: trasforma tutti gli ArrayBuffer in Uint8Array
  */
 function normalizeForSerialization(obj) {
+    // 1) Binary views stay as-is
     if (ArrayBuffer.isView(obj))
         return obj;
+    // 2) ArrayBuffer → Uint8Array
     if (obj instanceof ArrayBuffer)
         return new Uint8Array(obj);
-    if (Array.isArray(obj))
-        return obj.map(normalizeForSerialization);
-    if (obj && typeof obj === 'object') {
-        const res = {};
+    // 3) Array → filter + recurse
+    if (Array.isArray(obj)) {
+        const arr = [];
+        for (const el of obj) {
+            // skip undefined elements
+            if (el === undefined)
+                continue;
+            arr.push(normalizeForSerialization(el));
+        }
+        return arr;
+    }
+    // 4) Plain object → skip undefined props + recurse
+    if (obj !== null && typeof obj === 'object') {
+        const out = {};
         for (const [k, v] of Object.entries(obj)) {
             if (v === undefined)
-                continue; // 🔥 salta undefined
-            res[k] = normalizeForSerialization(v);
+                continue; // drop undefined props
+            out[k] = normalizeForSerialization(v);
         }
-        return res;
+        return out;
     }
-    // primitivo (string, number, boolean, null…)
+    // 5) Primitive (string, number, boolean, null)
     return obj;
 }
 /**
