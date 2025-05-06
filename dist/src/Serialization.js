@@ -30,22 +30,22 @@ function fixObject(obj) {
  * Normalizza un oggetto: trasforma tutti gli ArrayBuffer in Uint8Array
  */
 function normalizeForSerialization(obj) {
-    if (ArrayBuffer.isView(obj)) {
+    if (ArrayBuffer.isView(obj))
         return obj;
-    }
-    if (obj instanceof ArrayBuffer) {
+    if (obj instanceof ArrayBuffer)
         return new Uint8Array(obj);
-    }
-    if (Array.isArray(obj)) {
+    if (Array.isArray(obj))
         return obj.map(normalizeForSerialization);
-    }
-    if (obj && typeof obj === "object") {
+    if (obj && typeof obj === 'object') {
         const res = {};
-        for (const k in obj) {
-            res[k] = normalizeForSerialization(obj[k]);
+        for (const [k, v] of Object.entries(obj)) {
+            if (v === undefined)
+                continue; // 🔥 salta undefined
+            res[k] = normalizeForSerialization(v);
         }
         return res;
     }
+    // primitivo (string, number, boolean, null…)
     return obj;
 }
 /**
