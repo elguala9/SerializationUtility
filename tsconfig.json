@@ -13,7 +13,7 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,
-    "composite": true       // serve per le project references
+    "composite": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "scripts"]
