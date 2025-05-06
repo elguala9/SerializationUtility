@@ -1,0 +1,47 @@
+{
+  "name": "serializationutility",
+  "version": "1.0.0",
+  "description": "Serialization utility for data",
+  "keywords": [
+    "serialization"
+  ],
+  "homepage": "https://github.com/elguala9/SerializationUtility#readme",
+  "bugs": {
+    "url": "https://github.com/elguala9/SerializationUtility/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elguala9/SerializationUtility.git"
+  },
+  "license": "GPL-2.0-only",
+  "author": "Luca Gualandi",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b .",
+    "gen-exports": "node scripts/gen-exports.js",
+    "prepare": "npm run build && npm run gen-exports"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^3.1.1",
+    "js-sha256": "^0.11.0"
+  },
+  "devDependencies": {
+    "barrelbot": "^0.0.6",
+    "barrelsby": "^2.8.1",
+    "fast-glob": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "exports": {
+    "./src/Serialization": {
+      "import": "./dist/src/Serialization.js",
+      "types": "./dist/src/Serialization.d.ts"
+    },
+    "./src/Utility": {
+      "import": "./dist/src/Utility.js",
+      "types": "./dist/src/Utility.d.ts"
+    }
+  }
+}
