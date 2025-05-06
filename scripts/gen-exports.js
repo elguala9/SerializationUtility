@@ -8,33 +8,31 @@ const distDir     = path.join(projectRoot, 'dist');
 const pkgPath     = path.join(projectRoot, 'package.json');
 const pkg         = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
-fg('**/*.js', { cwd: distDir }).then(jsFiles => {
-  // Build per-file exports, stripping "src/" from keys
+(async () => {
+  // Find all .js files under dist (including nested dirs)
+  const jsFiles = await fg('**/*.js', { cwd: distDir });
+
+  // Build exports mapping keys that exactly mirror file paths (minus .js extension)
   const exportsMap = jsFiles.reduce((out, jsFile) => {
-    const cleanName = jsFile
-      .replace(/\.js$/, '')       // remove extension
-      .replace(/^src\//, '');     // strip src/ prefix
+    // e.g. "src/utils/helper.js" -> "src/utils/helper"
+    const keyPath = jsFile.replace(/\.js$/, '');
 
     const jsPath  = `./dist/${jsFile}`;
     const dtsFile = jsFile.replace(/\.js$/, '.d.ts');
-    const dtsPath = `./dist/${dtsFile}`;
 
-    out[`./${cleanName}`] = fs.existsSync(path.join(distDir, dtsFile))
-      ? { import: jsPath, types: dtsPath }
-      : { import: jsPath };
-
+    // Check if corresponding .d.ts exists
+    if (fs.existsSync(path.join(distDir, dtsFile))) {
+      out[`./${keyPath}`] = { import: jsPath, types: `./dist/${dtsFile}` };
+    } else {
+      out[`./${keyPath}`] = { import: jsPath };
+    }
     return out;
   }, {});
 
-  // Define exports: no root index, wildcard covers dist/src
-  pkg.exports = {
-    './*': {
-      import: './dist/src/*.js',
-      types:  './dist/src/*.d.ts'
-    },
-    ...exportsMap
-  };
+  // Replace exports section with explicit mappings
+  pkg.exports = exportsMap;
 
+  // Write back to package.json
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
   console.log('✅ package.json exports updated:', Object.keys(pkg.exports));
-});
+})();
