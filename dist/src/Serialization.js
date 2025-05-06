@@ -68,7 +68,9 @@ function normalizeForSerialization(obj) {
  */
 export function serializeObject(obj) {
     const normalized = normalizeForSerialization(obj);
-    return encode(normalized);
+    //return encode(normalized);
+    const json = JSON.stringify(normalized);
+    return new TextEncoder().encode(json);
 }
 /**
  * Deserializza un Uint8Array in un oggetto usando MessagePack.
@@ -77,7 +79,9 @@ export function serializeObject(obj) {
  * @returns Oggetto deserializzato.
  */
 export function deserializeObject(data) {
-    return decode(data);
+    //return decode(data) as T;
+    const json = new TextDecoder().decode(data);
+    return JSON.parse(json);
 }
 /**
  * Converte un oggetto in ArrayBuffer usando MessagePack.

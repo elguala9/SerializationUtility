@@ -71,7 +71,9 @@ function normalizeForSerialization(obj: any): any {
  */
 export function serializeObject(obj: any): Uint8Array {
   const normalized = normalizeForSerialization(obj);
-  return encode(normalized);
+  //return encode(normalized);
+  const json    = JSON.stringify(normalized);
+  return new TextEncoder().encode(json);
 }
 
 /**
@@ -81,7 +83,9 @@ export function serializeObject(obj: any): Uint8Array {
  * @returns Oggetto deserializzato.
  */
 export function deserializeObject<T = any>(data: Uint8Array): T {
-  return decode(data) as T;
+  //return decode(data) as T;
+  const json = new TextDecoder().decode(data);
+  return JSON.parse(json) as T;
 }
 
 /**
