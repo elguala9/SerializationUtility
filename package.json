@@ -19,10 +19,11 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -b .",
-    "gen-exports": "node scripts/gen-exports.js",
+    "gen-exports": "npx gen-exports dist",
     "prepare": "npm run build && npm run gen-exports"
   },
   "dependencies": {
+    "gen-exports": "^1.0.0",
     "js-sha256": "^0.11.0"
   },
   "devDependencies": {
