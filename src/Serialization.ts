@@ -1,4 +1,3 @@
-import { encode, decode } from "@msgpack/msgpack";
 
 /**
  * Recognizes and preserves TypedArray / DataView instances
@@ -86,14 +85,14 @@ export function deserializeObject<T = any>(data: Uint8Array): T {
 }
 
 /**
- * Converts an object to an ArrayBuffer using MessagePack.
+ * Converts an object to an ArrayBuffer
  *
  * @param obj The object to serialize.
  * @returns The serialized ArrayBuffer.
  */
 export function objectToArrayBuffer(obj: any): ArrayBuffer {
   const fixedObj = fixObject(obj);
-  const uint8Array = encode(fixedObj);  // view on the internal ArrayBuffer
+  const uint8Array = serializeObject(fixedObj);  // view on the internal ArrayBuffer
   const { byteOffset, byteLength, buffer } = uint8Array;
 
   // Return a sliced ArrayBuffer for the exact region
@@ -101,15 +100,14 @@ export function objectToArrayBuffer(obj: any): ArrayBuffer {
 }
 
 /**
- * Converts an ArrayBuffer back into an object using MessagePack.
+ * Converts an ArrayBuffer back into an object
  *
  * @param buffer The ArrayBuffer to deserialize.
  * @returns The deserialized object.
  */
 export function arrayBufferToObject<T>(buffer: ArrayBuffer): T {
   const uint8Array = new Uint8Array(buffer); // wrap buffer in Uint8Array
-  const obj = decode(uint8Array);           // decode to object
-  console.log("MessagePack decoded object", obj);
+  const obj = deserializeObject(uint8Array);           // decode to object
 
   return obj as T;
 }
