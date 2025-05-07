@@ -1,118 +1,115 @@
 import { encode, decode } from "@msgpack/msgpack";
 
-
 /**
- * Riconosce e conserva TypedArray / DataView
+ * Recognizes and preserves TypedArray / DataView instances
  */
 function fixObject(obj: any): any {
-  // 1) Se è già una view binaria (Uint8Array, DataView, ecc.)
+  // 1) If it's already a binary view (Uint8Array, DataView, etc.)
   if (ArrayBuffer.isView(obj)) {
     return obj;
   }
-  // 2) Se è un ArrayBuffer “puro”, wrappalo in Uint8Array
+  // 2) If it's a raw ArrayBuffer, wrap it in a Uint8Array
   if (obj instanceof ArrayBuffer) {
     return new Uint8Array(obj);
   }
-  // 3) Array → ricorsione
+  // 3) For arrays, apply recursion
   if (Array.isArray(obj)) {
     return obj.map(fixObject);
   }
-  // 4) Oggetto plain → ricorsione
+  // 4) For plain objects, apply recursion on each property
   if (obj && typeof obj === "object") {
     const out: any = {};
-    for (const k in obj) {
-      out[k] = fixObject(obj[k]);
+    for (const key in obj) {
+      out[key] = fixObject(obj[key]);
     }
     return out;
   }
-  // 5) Primitivo (string, number, boolean, null…)
+  // 5) Otherwise, return primitive values unchanged
   return obj;
 }
 
 /**
- * Normalizza un oggetto: trasforma tutti gli ArrayBuffer in Uint8Array
+ * Normalizes an object by converting ArrayBuffers to Uint8Arrays and
+ * removing undefined values from objects and arrays
  */
 function normalizeForSerialization(obj: any): any {
-  // 1) Binary views stay as-is
+  // 1) Preserve binary views as-is
   if (ArrayBuffer.isView(obj)) return obj;
-  // 2) ArrayBuffer → Uint8Array
+  // 2) Convert raw ArrayBuffer to Uint8Array
   if (obj instanceof ArrayBuffer) return new Uint8Array(obj);
 
-  // 3) Array → filter + recurse
+  // 3) Process arrays: skip undefined elements and recurse
   if (Array.isArray(obj)) {
-    const arr: any[] = [];
-    for (const el of obj) {
-      // skip undefined elements
-      if (el === undefined) continue;
-      arr.push(normalizeForSerialization(el));
+    const result: any[] = [];
+    for (const element of obj) {
+      if (element === undefined) continue; // drop undefined elements
+      result.push(normalizeForSerialization(element));
     }
-    return arr;
+    return result;
   }
 
-  // 4) Plain object → skip undefined props + recurse
+  // 4) Process plain objects: drop undefined properties and recurse
   if (obj !== null && typeof obj === 'object') {
-    const out: any = {};
-    for (const [k, v] of Object.entries(obj)) {
-      if (v === undefined) continue;         // drop undefined props
-      out[k] = normalizeForSerialization(v);
+    const result: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value === undefined) continue; // drop undefined props
+      result[key] = normalizeForSerialization(value);
     }
-    return out;
+    return result;
   }
 
-  // 5) Primitive (string, number, boolean, null)
+  // 5) Return primitive values (string, number, boolean, null)
   return obj;
 }
 
 /**
- * Serializza un oggetto in un Uint8Array usando MessagePack.
+ * Serializes an object to a Uint8Array using JSON after normalizing it.
  *
- * @param obj L'oggetto da serializzare.
- * @returns Uint8Array serializzato.
+ * @param obj The object to serialize.
+ * @returns A Uint8Array representing the serialized JSON.
  */
 export function serializeObject(obj: any): Uint8Array {
   const normalized = normalizeForSerialization(obj);
-  //return encode(normalized);
-  const json    = JSON.stringify(normalized);
+  const json = JSON.stringify(normalized);
   return new TextEncoder().encode(json);
 }
 
 /**
- * Deserializza un Uint8Array in un oggetto usando MessagePack.
+ * Deserializes a Uint8Array back into an object using JSON.parse.
  *
- * @param data Il Uint8Array ricevuto.
- * @returns Oggetto deserializzato.
+ * @param data The Uint8Array to deserialize.
+ * @returns The deserialized object.
  */
 export function deserializeObject<T = any>(data: Uint8Array): T {
-  //return decode(data) as T;
   const json = new TextDecoder().decode(data);
   return JSON.parse(json) as T;
 }
 
 /**
- * Converte un oggetto in ArrayBuffer usando MessagePack.
+ * Converts an object to an ArrayBuffer using MessagePack.
  *
- * @param obj - L'oggetto da serializzare.
- * @returns L'ArrayBuffer serializzato.
+ * @param obj The object to serialize.
+ * @returns The serialized ArrayBuffer.
  */
 export function objectToArrayBuffer(obj: any): ArrayBuffer {
-  const fixedObj   = fixObject(obj);
-  const uint8Array = encode(fixedObj);        // view su ArrayBuffer interno
+  const fixedObj = fixObject(obj);
+  const uint8Array = encode(fixedObj);  // view on the internal ArrayBuffer
   const { byteOffset, byteLength, buffer } = uint8Array;
 
-  // slice dell’ArrayBuffer solo nella porzione [offset, offset+length)
+  // Return a sliced ArrayBuffer for the exact region
   return buffer.slice(byteOffset, byteOffset + byteLength);
 }
 
 /**
- * Converte un ArrayBuffer in un oggetto usando MessagePack.
+ * Converts an ArrayBuffer back into an object using MessagePack.
  *
- * @param buffer - L'ArrayBuffer da deserializzare.
- * @returns L'oggetto deserializzato.
+ * @param buffer The ArrayBuffer to deserialize.
+ * @returns The deserialized object.
  */
 export function arrayBufferToObject<T>(buffer: ArrayBuffer): T {
-  const uint8Array = new Uint8Array(buffer); // creo Uint8Array dal buffer
-  const obj = decode(uint8Array); // decode restituisce l'oggetto
-  console.log("msgpack decoded object", obj);
+  const uint8Array = new Uint8Array(buffer); // wrap buffer in Uint8Array
+  const obj = decode(uint8Array);           // decode to object
+  console.log("MessagePack decoded object", obj);
 
   return obj as T;
 }
