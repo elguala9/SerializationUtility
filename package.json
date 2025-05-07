@@ -34,6 +34,16 @@
     "typescript": "^5.8.2"
   },
   "exports": {
+    "./src/Array": {
+      "import": "./dist/src/Array.js",
+      "require": "./dist/src/Array.js",
+      "types": "./dist/src/Array.d.ts"
+    },
+    "./src/Hash": {
+      "import": "./dist/src/Hash.js",
+      "require": "./dist/src/Hash.js",
+      "types": "./dist/src/Hash.d.ts"
+    },
     "./src/Serialization": {
       "import": "./dist/src/Serialization.js",
       "require": "./dist/src/Serialization.js",
