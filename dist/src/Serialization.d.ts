@@ -13,14 +13,14 @@ export declare function serializeObject(obj: any): Uint8Array;
  */
 export declare function deserializeObject<T = any>(data: Uint8Array): T;
 /**
- * Converts an object to an ArrayBuffer using MessagePack.
+ * Converts an object to an ArrayBuffer
  *
  * @param obj The object to serialize.
  * @returns The serialized ArrayBuffer.
  */
 export declare function objectToArrayBuffer(obj: any): ArrayBuffer;
 /**
- * Converts an ArrayBuffer back into an object using MessagePack.
+ * Converts an ArrayBuffer back into an object
  *
  * @param buffer The ArrayBuffer to deserialize.
  * @returns The deserialized object.
