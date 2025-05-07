@@ -1,28 +1,28 @@
 /**
- * Serializza un oggetto in un Uint8Array usando MessagePack.
+ * Serializes an object to a Uint8Array using JSON after normalizing it.
  *
- * @param obj L'oggetto da serializzare.
- * @returns Uint8Array serializzato.
+ * @param obj The object to serialize.
+ * @returns A Uint8Array representing the serialized JSON.
  */
 export declare function serializeObject(obj: any): Uint8Array;
 /**
- * Deserializza un Uint8Array in un oggetto usando MessagePack.
+ * Deserializes a Uint8Array back into an object using JSON.parse.
  *
- * @param data Il Uint8Array ricevuto.
- * @returns Oggetto deserializzato.
+ * @param data The Uint8Array to deserialize.
+ * @returns The deserialized object.
  */
 export declare function deserializeObject<T = any>(data: Uint8Array): T;
 /**
- * Converte un oggetto in ArrayBuffer usando MessagePack.
+ * Converts an object to an ArrayBuffer using MessagePack.
  *
- * @param obj - L'oggetto da serializzare.
- * @returns L'ArrayBuffer serializzato.
+ * @param obj The object to serialize.
+ * @returns The serialized ArrayBuffer.
  */
 export declare function objectToArrayBuffer(obj: any): ArrayBuffer;
 /**
- * Converte un ArrayBuffer in un oggetto usando MessagePack.
+ * Converts an ArrayBuffer back into an object using MessagePack.
  *
- * @param buffer - L'ArrayBuffer da deserializzare.
- * @returns L'oggetto deserializzato.
+ * @param buffer The ArrayBuffer to deserialize.
+ * @returns The deserialized object.
  */
 export declare function arrayBufferToObject<T>(buffer: ArrayBuffer): T;
