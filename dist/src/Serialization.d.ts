@@ -20,9 +20,23 @@ export declare function deserializeObject<T = any>(data: Uint8Array): T;
  */
 export declare function objectToArrayBuffer(obj: any): ArrayBuffer;
 /**
- * Converts an ArrayBuffer back into an object
+ * Converts an ArrayBuffer back into an object, reconstructing any Uint8Array fields
  *
  * @param buffer The ArrayBuffer to deserialize.
- * @returns The deserialized object.
+ * @returns The deserialized object with TypedArrays restored.
  */
 export declare function arrayBufferToObject<T>(buffer: ArrayBuffer): T;
+/**
+ * Combines an array of number[] into a single number[].
+ *
+ * @param arrays - An array of number arrays to combine.
+ * @returns A single number[] containing the concatenated data of tutti gli input.
+ */
+export declare function composeNumberArray(arrays: number[][]): number[];
+/**
+ * Serializes an object to a number[] using JSON after normalizing it.
+ *
+ * @param obj The object to serialize.
+ * @returns A number[] representing the serialized JSON in UTF-8 bytes.
+ */
+export declare function serializeObjectToNumberArray(obj: any): number[];
