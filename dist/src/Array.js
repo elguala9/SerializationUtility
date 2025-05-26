@@ -18,26 +18,4 @@ export function composeUint8Array(buffers) {
     // Return the underlying ArrayBuffer
     return combined;
 }
-/**
- * Serializes any JavaScript object into a Uint8Array using JSON + UTF-8 encoding.
- *
- * @param obj - The object to serialize.
- * @returns A Uint8Array containing the UTF-8 encoded JSON representation of the object.
- */
-export function objectToUint8Array(obj) {
-    const json = JSON.stringify(obj);
-    const encoder = new TextEncoder();
-    return encoder.encode(json);
-}
-/**
- * Deserializes a Uint8Array back into a JavaScript object using JSON.parse.
- *
- * @param data - The Uint8Array containing UTF-8 encoded JSON.
- * @returns The deserialized object of type T.
- */
-export function uint8ArrayToObject(data) {
-    const decoder = new TextDecoder();
-    const json = decoder.decode(data);
-    return JSON.parse(json);
-}
 //# sourceMappingURL=Array.js.map

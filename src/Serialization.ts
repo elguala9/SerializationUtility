@@ -62,25 +62,26 @@ function normalizeForSerialization(obj: any): any {
 }
 
 /**
- * Serializes an object to a Uint8Array using JSON after normalizing it.
+ * Serializes any JavaScript object into a Uint8Array using JSON + UTF-8 encoding.
  *
- * @param obj The object to serialize.
- * @returns A Uint8Array representing the serialized JSON.
+ * @param obj - The object to serialize.
+ * @returns A Uint8Array containing the UTF-8 encoded JSON representation of the object.
  */
-export function serializeObject(obj: any): Uint8Array {
-  const normalized = normalizeForSerialization(obj);
-  const json = JSON.stringify(normalized);
-  return new TextEncoder().encode(json);
+export function objectToUint8Array<T>(obj: T): Uint8Array {
+  const json = JSON.stringify(obj);
+  const encoder = new TextEncoder();
+  return encoder.encode(json);
 }
 
 /**
- * Deserializes a Uint8Array back into an object using JSON.parse.
+ * Deserializes a Uint8Array back into a JavaScript object using JSON.parse.
  *
- * @param data The Uint8Array to deserialize.
- * @returns The deserialized object.
+ * @param data - The Uint8Array containing UTF-8 encoded JSON.
+ * @returns The deserialized object of type T.
  */
-export function deserializeObject<T = any>(data: Uint8Array): T {
-  const json = new TextDecoder().decode(data);
+export function uint8ArrayToObject<T>(data: Uint8Array): T {
+  const decoder = new TextDecoder();
+  const json = decoder.decode(data);
   return JSON.parse(json) as T;
 }
 
@@ -92,7 +93,7 @@ export function deserializeObject<T = any>(data: Uint8Array): T {
  */
 export function objectToArrayBuffer(obj: any): ArrayBuffer {
   const fixedObj = fixObject(obj);
-  const uint8Array = serializeObject(fixedObj);  // view on the internal ArrayBuffer
+  const uint8Array = objectToUint8Array(fixedObj);  // view on the internal ArrayBuffer
   const { byteOffset, byteLength, buffer } = uint8Array;
 
   // Return a sliced ArrayBuffer for the exact region
