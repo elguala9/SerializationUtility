@@ -23,10 +23,10 @@
     "prepare": "npm run build && npm run gen-exports"
   },
   "dependencies": {
-    "gen-exports": "^1.0.0",
     "js-sha256": "^0.11.0"
   },
   "devDependencies": {
+    "gen-exports": "^1.0.0",
     "barrelbot": "^0.0.6",
     "barrelsby": "^2.8.1",
     "fast-glob": "^3.3.3",
