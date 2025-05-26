@@ -22,3 +22,4 @@ export function composeUint8Array(buffers: Uint8Array[]): Uint8Array {
   // Return the underlying ArrayBuffer
   return combined;
 }
+
