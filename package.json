@@ -1,6 +1,6 @@
 {
   "name": "serialization-utility",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Serialization utility for data",
   "keywords": [
     "serialization"
