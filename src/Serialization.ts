@@ -117,6 +117,27 @@ export function parseBufferToObject(buffer: ArrayBuffer): any {
 }
 
 /**
+ * Converts a numeric-keyed object (e.g. {"0":num0, "1":num1, ...}) into a Uint8Array.
+ *
+ * @param numericMap - The object whose keys are numeric strings and values are numbers.
+ * @returns A Uint8Array containing the values in index order.
+ */
+export function numericMapToUint8Array(numericMap: Record<string, number>): Uint8Array {
+  const keys = Object.keys(numericMap)
+    .filter(k => /^[0-9]+$/.test(k))
+    .map(k => parseInt(k, 10));
+  if (keys.length === 0) {
+    return new Uint8Array();
+  }
+  const length = Math.max(...keys) + 1;
+  const arr = new Uint8Array(length);
+  for (const index of keys) {
+    arr[index] = numericMap[String(index)];
+  }
+  return arr;
+}
+
+/**
  * Scans an object for numeric-keyed maps and converts them into Uint8Arrays.
  *
  * @param obj - The object to transform in-place.
@@ -133,12 +154,7 @@ export function restoreTypedArrays(obj: any): void {
         ([k, v]) => /^[0-9]+$/.test(k) && typeof v === 'number'
       );
       if (isNumericMap) {
-        const length = entries.length;
-        const arr = new Uint8Array(length);
-        for (let i = 0; i < length; i++) {
-          arr[i] = (value as any)[`${i}`];
-        }
-        obj[key] = arr;
+        obj[key] = numericMapToUint8Array(value as Record<string, number>);
       }
     }
   }

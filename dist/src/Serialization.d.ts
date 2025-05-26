@@ -28,6 +28,13 @@ export declare function objectToArrayBuffer(obj: any): ArrayBuffer;
  */
 export declare function parseBufferToObject(buffer: ArrayBuffer): any;
 /**
+ * Converts a numeric-keyed object (e.g. {"0":num0, "1":num1, ...}) into a Uint8Array.
+ *
+ * @param numericMap - The object whose keys are numeric strings and values are numbers.
+ * @returns A Uint8Array containing the values in index order.
+ */
+export declare function numericMapToUint8Array(numericMap: Record<string, number>): Uint8Array;
+/**
  * Scans an object for numeric-keyed maps and converts them into Uint8Arrays.
  *
  * @param obj - The object to transform in-place.
