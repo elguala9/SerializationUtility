@@ -71,15 +71,20 @@ export function objectToUint8Array(obj) {
     return encoder.encode(json);
 }
 /**
- * Deserializes a Uint8Array back into a JavaScript object using JSON.parse.
+ * Deserializes a Uint8Array back into a JavaScript object using JSON.parse,
+ * and restores any numeric-keyed maps into Uint8Arrays.
  *
  * @param data - The Uint8Array containing UTF-8 encoded JSON.
- * @returns The deserialized object of type T.
+ * @returns The deserialized object of type T with TypedArrays restored.
  */
 export function uint8ArrayToObject(data) {
-    const decoder = new TextDecoder();
-    const json = decoder.decode(data);
-    return JSON.parse(json);
+    // Decode to string
+    const json = new TextDecoder().decode(data);
+    // Parse JSON
+    const parsed = JSON.parse(json);
+    // Restore any embedded Uint8Arrays
+    restoreTypedArrays(parsed);
+    return parsed;
 }
 /**
  * Converts an object to an ArrayBuffer
@@ -95,35 +100,49 @@ export function objectToArrayBuffer(obj) {
     return buffer.slice(byteOffset, byteOffset + byteLength);
 }
 /**
- * Converts an ArrayBuffer back into an object, reconstructing any Uint8Array fields
+ * Parses an ArrayBuffer into a JavaScript object by decoding UTF-8 JSON.
  *
- * @param buffer The ArrayBuffer to deserialize.
- * @returns The deserialized object with TypedArrays restored.
+ * @param buffer - The ArrayBuffer containing UTF-8 encoded JSON.
+ * @returns The parsed object.
  */
-export function arrayBufferToObject(buffer) {
-    // Decode the ArrayBuffer into a UTF-8 string
+export function parseBufferToObject(buffer) {
     const text = new TextDecoder().decode(buffer);
-    // Parse the JSON
-    const parsed = JSON.parse(text);
-    // Iterate over object properties to restore any Uint8Array fields
-    for (const [key, value] of Object.entries(parsed)) {
+    return JSON.parse(text);
+}
+/**
+ * Scans an object for numeric-keyed maps and converts them into Uint8Arrays.
+ *
+ * @param obj - The object to transform in-place.
+ */
+export function restoreTypedArrays(obj) {
+    for (const [key, value] of Object.entries(obj)) {
         if (value !== null &&
             typeof value === 'object' &&
             !Array.isArray(value)) {
             const entries = Object.entries(value);
-            // Check if all keys are consecutive numeric strings mapping to numbers
             const isNumericMap = entries.length > 0 && entries.every(([k, v]) => /^[0-9]+$/.test(k) && typeof v === 'number');
             if (isNumericMap) {
-                // Convert numeric-keyed object to Uint8Array
                 const length = entries.length;
                 const arr = new Uint8Array(length);
                 for (let i = 0; i < length; i++) {
                     arr[i] = value[`${i}`];
                 }
-                parsed[key] = arr;
+                obj[key] = arr;
             }
         }
     }
+}
+/**
+ * Converts an ArrayBuffer back into an object, reconstructing any Uint8Array fields.
+ *
+ * Combines parseBufferToObject and restoreTypedArrays for full deserialization.
+ *
+ * @param buffer - The ArrayBuffer to deserialize.
+ * @returns The deserialized object with TypedArrays restored.
+ */
+export function arrayBufferToObject(buffer) {
+    const parsed = parseBufferToObject(buffer);
+    restoreTypedArrays(parsed);
     return parsed;
 }
 /**
