@@ -142,9 +142,19 @@ export function numericMapToUint8Array(numericMap: Record<string, number>): Uint
  *
  * @param obj - The object to transform in-place.
  */
+/**
+ * Scans an object for any arrays of numbers or numeric-keyed maps and converts them into Uint8Arrays.
+ *
+ * @param obj - The object to transform in-place.
+ */
 export function restoreTypedArrays(obj: any): void {
   for (const [key, value] of Object.entries(obj)) {
-    if (
+    // If plain array of numbers, convert directly
+    if (Array.isArray(value) && value.every(v => typeof v === 'number')) {
+      obj[key] = new Uint8Array(value as number[]);
+    }
+    // Otherwise, detect numeric-keyed map
+    else if (
       value !== null &&
       typeof value === 'object' &&
       !Array.isArray(value)
