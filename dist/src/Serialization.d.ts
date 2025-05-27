@@ -39,6 +39,11 @@ export declare function numericMapToUint8Array(numericMap: Record<string, number
  *
  * @param obj - The object to transform in-place.
  */
+/**
+ * Scans an object for any arrays of numbers or numeric-keyed maps and converts them into Uint8Arrays.
+ *
+ * @param obj - The object to transform in-place.
+ */
 export declare function restoreTypedArrays(obj: any): void;
 /**
  * Converts an ArrayBuffer back into an object, reconstructing any Uint8Array fields.
