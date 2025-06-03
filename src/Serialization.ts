@@ -1,3 +1,5 @@
+import { decode } from "@msgpack/msgpack/dist.esm/decode.js";
+import { encode } from "@msgpack/msgpack/dist.esm/encode.js";
 
 /**
  * Recognizes and preserves TypedArray / DataView instances
@@ -68,9 +70,7 @@ function normalizeForSerialization(obj: any): any {
  * @returns A Uint8Array containing the UTF-8 encoded JSON representation of the object.
  */
 export function objectToUint8Array<T>(obj: T): Uint8Array {
-  const json = JSON.stringify(obj);
-  const encoder = new TextEncoder();
-  return encoder.encode(json);
+  return encode(obj);
 }
 
 /**
@@ -82,12 +82,7 @@ export function objectToUint8Array<T>(obj: T): Uint8Array {
  */
 export function uint8ArrayToObject<T>(data: Uint8Array): T {
   // Decode to string
-  const json = new TextDecoder().decode(data);
-  // Parse JSON
-  const parsed = JSON.parse(json);
-  // Restore any embedded Uint8Arrays
-  restoreTypedArrays(parsed);
-  return parsed as T;
+  return decode(data) as T;
 }
 
 /**
