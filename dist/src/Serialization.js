@@ -1,5 +1,5 @@
-import { decode } from "@msgpack/msgpack/dist.esm/decode.js";
-import { encode } from "@msgpack/msgpack/dist.esm/encode.js";
+import { decode } from "@msgpack/msgpack";
+import { encode } from "@msgpack/msgpack";
 /**
  * Recognizes and preserves TypedArray / DataView instances
  */
