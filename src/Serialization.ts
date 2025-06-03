@@ -1,5 +1,5 @@
-import { decode } from "@msgpack/msgpack";
-import { encode } from "@msgpack/msgpack";
+import { decode, encode } from "notepack.io";
+
 
 /**
  * Recognizes and preserves TypedArray / DataView instances
