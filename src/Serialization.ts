@@ -85,6 +85,16 @@ export function uint8ArrayToObject<T>(data: Uint8Array): T {
   return decode(data) as T;
 }
 
+function arrayBufferToUint8Array(arrayBuffer: ArrayBuffer): Uint8Array {
+  return new Uint8Array(arrayBuffer);
+}
+
+function uint8ArrayToArrayBuffer(uint8Array: Uint8Array): ArrayBuffer {
+  const buffer = new ArrayBuffer(uint8Array.byteLength);
+  new Uint8Array(buffer).set(uint8Array);
+  return buffer;
+}
+
 /**
  * Converts an object to an ArrayBuffer
  *
@@ -97,7 +107,7 @@ export function objectToArrayBuffer(obj: any): ArrayBuffer {
   const { byteOffset, byteLength, buffer } = uint8Array;
 
   // Return a sliced ArrayBuffer for the exact region
-  return buffer.slice(byteOffset, byteOffset + byteLength);
+  return buffer.slice(byteOffset, byteOffset + byteLength) as ArrayBuffer;
 }
 
 /**

@@ -80,6 +80,14 @@ export function uint8ArrayToObject(data) {
     // Decode to string
     return decode(data);
 }
+function arrayBufferToUint8Array(arrayBuffer) {
+    return new Uint8Array(arrayBuffer);
+}
+function uint8ArrayToArrayBuffer(uint8Array) {
+    const buffer = new ArrayBuffer(uint8Array.byteLength);
+    new Uint8Array(buffer).set(uint8Array);
+    return buffer;
+}
 /**
  * Converts an object to an ArrayBuffer
  *
