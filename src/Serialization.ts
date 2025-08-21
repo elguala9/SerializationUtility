@@ -85,11 +85,11 @@ export function uint8ArrayToObject<T>(data: Uint8Array): T {
   return decode(data) as T;
 }
 
-function arrayBufferToUint8Array(arrayBuffer: ArrayBuffer): Uint8Array {
+export function arrayBufferToUint8Array(arrayBuffer: ArrayBuffer): Uint8Array {
   return new Uint8Array(arrayBuffer);
 }
 
-function uint8ArrayToArrayBuffer(uint8Array: Uint8Array): ArrayBuffer {
+export function uint8ArrayToArrayBuffer(uint8Array: Uint8Array): ArrayBuffer {
   const buffer = new ArrayBuffer(uint8Array.byteLength);
   new Uint8Array(buffer).set(uint8Array);
   return buffer;

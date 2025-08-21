@@ -13,6 +13,8 @@ export declare function objectToUint8Array<T>(obj: T): Uint8Array;
  * @returns The deserialized object of type T with TypedArrays restored.
  */
 export declare function uint8ArrayToObject<T>(data: Uint8Array): T;
+export declare function arrayBufferToUint8Array(arrayBuffer: ArrayBuffer): Uint8Array;
+export declare function uint8ArrayToArrayBuffer(uint8Array: Uint8Array): ArrayBuffer;
 /**
  * Converts an object to an ArrayBuffer
  *
