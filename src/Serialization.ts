@@ -86,7 +86,7 @@ export function uint8ArrayToObject<T>(data: Uint8Array): T {
 }
 
 export function arrayBufferToUint8Array(arrayBuffer: ArrayBuffer): Uint8Array {
-  return new Uint8Array(arrayBuffer);
+  return Buffer.from(new Uint8Array(arrayBuffer));
 }
 
 export function uint8ArrayToArrayBuffer(uint8Array: Uint8Array): ArrayBuffer {

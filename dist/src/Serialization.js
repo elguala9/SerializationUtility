@@ -81,7 +81,7 @@ export function uint8ArrayToObject(data) {
     return decode(data);
 }
 export function arrayBufferToUint8Array(arrayBuffer) {
-    return new Uint8Array(arrayBuffer);
+    return Buffer.from(new Uint8Array(arrayBuffer));
 }
 export function uint8ArrayToArrayBuffer(uint8Array) {
     const buffer = new ArrayBuffer(uint8Array.byteLength);
